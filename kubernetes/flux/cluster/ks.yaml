@@ -89,6 +89,25 @@ spec:
               target:
                 group: helm.toolkit.fluxcd.io
                 kind: HelmRelease
+            # jgu5: QUIC (UDP 7844) blocked by upstream firewall — force http2
+            - patch: |-
+                apiVersion: helm.toolkit.fluxcd.io/v2
+                kind: HelmRelease
+                metadata:
+                  name: cloudflare-tunnel
+                spec:
+                  values:
+                    controllers:
+                      cloudflare-tunnel:
+                        containers:
+                          app:
+                            env:
+                              TUNNEL_POST_QUANTUM: false
+                              TUNNEL_TRANSPORT_PROTOCOL: http2
+              target:
+                group: helm.toolkit.fluxcd.io
+                kind: HelmRelease
+                name: cloudflare-tunnel
       target:
         group: kustomize.toolkit.fluxcd.io
         kind: Kustomization
