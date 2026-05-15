@@ -53,6 +53,12 @@ function apply_namespaces() {
 function apply_sops_secrets() {
     log debug "Applying secrets"
 
+    # Ensure flux-system namespace exists (jg-base manages it via Flux,
+    # so it's not under kubernetes/apps/ for apply_namespaces to create)
+    kubectl create namespace flux-system --dry-run=client --output=yaml \
+        | kubectl apply --server-side --filename - &>/dev/null \
+        || log error "Failed to ensure flux-system namespace"
+
     local -r secrets=(
         "${ROOT_DIR}/bootstrap/github-deploy-key.sops.yaml"
         "${ROOT_DIR}/bootstrap/sops-age.sops.yaml"
@@ -109,6 +115,13 @@ function apply_crds() {
 # Sync Helm releases
 function sync_helm_releases() {
     log debug "Syncing Helm releases"
+
+    # If Flux helm-controller is already running, it owns these releases.
+    # Re-running helmfile would conflict with helm-controller's server-side apply.
+    if kubectl --namespace flux-system get deployment helm-controller &>/dev/null; then
+        log info "Flux helm-controller detected, skipping bootstrap helmfile sync (cluster already bootstrapped)"
+        return 0
+    fi
 
     local -r helmfile_file="${ROOT_DIR}/bootstrap/helmfile.d/01-apps.yaml"
 
