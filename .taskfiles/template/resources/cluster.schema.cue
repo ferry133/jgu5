@@ -32,9 +32,12 @@ import (
 	nas_path?: string & !=""
 	nas_coding_path?: string & !=""
 	cluster_name: string & !=""
+	coredns_cluster_ip?: net.IPv4
 	extras?: [...string]
 	freepbx_mysql_root_password?: string & !=""
 	freepbx_mysql_password?: string & !=""
+	claudecode_postgres_password?: string & !=""
+	claude_code_database_url?: string
 	claude_instances?: [...string]
 	ttyd_credential?: string & !=""
 	postgres_password?: string & !=""
@@ -50,6 +53,12 @@ import (
 	synophoto_auth0_client_secret?: string
 	synophoto_allowed_emails?: string
 	synophoto_flask_secret_key?: string
+	synophoto_nas_username?: string
+	synophoto_nas_password?: string
+	omni_gpg_key?: string
+	mqtt_lb_ip?: net.IPv4 & !=""
+	ingress_nginx_lb_ip?: net.IPv4 & !=""
+	cloudflare_lan_tunnel_token?: string & !=""
 }
 
 #Config
